@@ -1,156 +1,169 @@
 package game
 
 import (
-	"container/heap"
-	"math"
-
 	pb "mmorpg/server/api/proto/gen"
 )
 
-var directions = [8][2]int32{
-	{0, -1},  // N
-	{1, 0},   // E
-	{0, 1},   // S
-	{-1, 0},  // W
-	{1, -1},  // NE
-	{1, 1},   // SE
-	{-1, 1},  // SW
-	{-1, -1}, // NW
+const (
+	costCardinal = 10
+	costDiagonal = 14 // ≈ √2 × 10
+)
+
+var dirs = [8][2]int32{
+	{0, -1}, {1, 0}, {0, 1}, {-1, 0}, // N E S W
+	{1, -1}, {1, 1}, {-1, 1}, {-1, -1}, // NE SE SW NW
 }
 
-type node struct {
-	x, y   int32
-	g      float64
-	f      float64
-	parent *node
-	index  int
-}
-
-type openSet []*node
-
-func (o openSet) Len() int           { return len(o) }
-func (o openSet) Less(i, j int) bool { return o[i].f < o[j].f }
-func (o openSet) Swap(i, j int) {
-	o[i], o[j] = o[j], o[i]
-	o[i].index = i
-	o[j].index = j
-}
-func (o *openSet) Push(x interface{}) {
-	n := x.(*node)
-	n.index = len(*o)
-	*o = append(*o, n)
-}
-func (o *openSet) Pop() interface{} {
-	old := *o
-	n := old[len(old)-1]
-	old[len(old)-1] = nil
-	n.index = -1
-	*o = old[:len(old)-1]
-	return n
-}
-
-// FindPath computes an A* path from (startX,startY) to (targetX,targetY).
+// FindPath computes the shortest path from (sx,sy) to (tx,ty) using A*
+// with octile heuristic and anti corner-cutting.
 // Returns nil if no path exists.
-func FindPath(mapData *pb.MapData, startX, startY, targetX, targetY int32) []*pb.PathNode {
-	if startX == targetX && startY == targetY {
-		return []*pb.PathNode{{X: startX, Y: startY}}
+func FindPath(mapData *pb.MapData, sx, sy, tx, ty int32) []*pb.PathNode {
+	w, h := mapData.Width, mapData.Height
+	size := int(w * h)
+	if size == 0 || !inBounds(tx, ty, w, h) {
+		return nil
 	}
-	if !IsWalkable(mapData, targetX, targetY) {
+	if sx == tx && sy == ty {
+		return []*pb.PathNode{{X: sx, Y: sy}}
+	}
+
+	start := int(sy*w + sx)
+	target := int(ty*w + tx)
+
+	// Flat walkability grid — one pass, direct index access.
+	walk := make([]bool, size)
+	for i, c := range mapData.Cells {
+		walk[i] = c.Walkable
+	}
+	if !walk[target] {
 		return nil
 	}
 
-	maxIter := int(mapData.Width)*int(mapData.Height)*4 + 1
-	key := func(x, y int32) int64 { return int64(x)<<32 | int64(y) }
+	// A* state — flat arrays, zero per-node allocations.
+	const inf = int(^uint(0) >> 1)
+	g := make([]int, size)
+	f := make([]int, size)
+	from := make([]int, size)
+	closed := make([]bool, size)
+	for i := range g {
+		g[i] = inf
+		f[i] = inf
+		from[i] = -1
+	}
+	g[start] = 0
+	f[start] = heuristic(start, tx, ty, w)
 
-	closed := make(map[int64]bool)
-	lookup := make(map[int64]*node)
+	// Binary min-heap (flat []int, ordered by f[]).
+	heap := make([]int, 0, 64)
+	heap = append(heap, start)
 
-	start := &node{x: startX, y: startY, g: 0, f: octile(startX, startY, targetX, targetY)}
-	lookup[key(startX, startY)] = start
-
-	os := &openSet{start}
-	heap.Init(os)
-
-	iter := 0
-	for os.Len() > 0 {
-		iter++
-		if iter > maxIter {
-			return nil
-		}
-
-		current := heap.Pop(os).(*node)
-		ck := key(current.x, current.y)
-		if closed[ck] {
+	for len(heap) > 0 {
+		cur := heapPop(&heap, f)
+		if closed[cur] {
 			continue
 		}
-		closed[ck] = true
+		closed[cur] = true
 
-		if current.x == targetX && current.y == targetY {
-			return reconstructPath(current)
+		if cur == target {
+			return tracePath(from, target, w)
 		}
 
-		for _, dir := range directions {
-			dx, dy := dir[0], dir[1]
-			nx, ny := current.x+dx, current.y+dy
-
-			if !IsWalkable(mapData, nx, ny) {
-				continue
-			}
-			if closed[key(nx, ny)] {
+		cx, cy := int32(cur)%w, int32(cur)/w
+		for _, d := range dirs {
+			dx, dy := d[0], d[1]
+			nx, ny := cx+dx, cy+dy
+			if !inBounds(nx, ny, w, h) {
 				continue
 			}
 
-			isDiag := dx != 0 && dy != 0
-			if isDiag {
-				if !IsWalkable(mapData, current.x+dx, current.y) ||
-					!IsWalkable(mapData, current.x, current.y+dy) {
+			next := int(ny*w + nx)
+			if !walk[next] || closed[next] {
+				continue
+			}
+
+			// Anti corner-cutting: diagonal requires both cardinals walkable.
+			if dx != 0 && dy != 0 {
+				if !walk[int(cy*w+cx+dx)] || !walk[int((cy+dy)*w+cx)] {
 					continue
 				}
 			}
 
-			cost := 1.0
-			if isDiag {
-				cost = math.Sqrt2
+			cost := costCardinal
+			if dx != 0 && dy != 0 {
+				cost = costDiagonal
 			}
-			ng := current.g + cost
-
-			nk := key(nx, ny)
-			existing, found := lookup[nk]
-			if found && ng >= existing.g {
-				continue
+			ng := g[cur] + cost
+			if ng < g[next] {
+				g[next] = ng
+				f[next] = ng + heuristic(next, tx, ty, w)
+				from[next] = cur
+				heapPush(&heap, next, f)
 			}
-
-			n := &node{
-				x:      nx,
-				y:      ny,
-				g:      ng,
-				f:      ng + octile(nx, ny, targetX, targetY),
-				parent: current,
-			}
-			lookup[nk] = n
-			heap.Push(os, n)
 		}
 	}
 
 	return nil
 }
 
-func octile(x1, y1, x2, y2 int32) float64 {
-	dx := math.Abs(float64(x2 - x1))
-	dy := math.Abs(float64(y2 - y1))
-	if dx > dy {
-		return dx + (math.Sqrt2-1)*dy
-	}
-	return dy + (math.Sqrt2-1)*dx
+func inBounds(x, y, w, h int32) bool {
+	return uint(x) < uint(w) && uint(y) < uint(h)
 }
 
-func reconstructPath(goal *node) []*pb.PathNode {
+// heuristic returns octile distance as fixed-point integer.
+// max(dx,dy)×10 + min(dx,dy)×4
+func heuristic(idx int, tx, ty, w int32) int {
+	dx := abs32(int32(idx)%w - tx)
+	dy := abs32(int32(idx)/w - ty)
+	if dx > dy {
+		return int(dx)*costCardinal + int(dy)*(costDiagonal-costCardinal)
+	}
+	return int(dy)*costCardinal + int(dx)*(costDiagonal-costCardinal)
+}
+
+func tracePath(from []int, target int, w int32) []*pb.PathNode {
 	var path []*pb.PathNode
-	for n := goal; n != nil; n = n.parent {
-		path = append(path, &pb.PathNode{X: n.x, Y: n.y})
+	for i := target; i != -1; i = from[i] {
+		path = append(path, &pb.PathNode{X: int32(i) % w, Y: int32(i) / w})
 	}
 	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
 		path[i], path[j] = path[j], path[i]
 	}
 	return path
+}
+
+func heapPush(h *[]int, idx int, f []int) {
+	*h = append(*h, idx)
+	i := len(*h) - 1
+	for i > 0 {
+		p := (i - 1) / 2
+		if f[(*h)[p]] <= f[(*h)[i]] {
+			break
+		}
+		(*h)[p], (*h)[i] = (*h)[i], (*h)[p]
+		i = p
+	}
+}
+
+func heapPop(h *[]int, f []int) int {
+	n := len(*h)
+	root := (*h)[0]
+	(*h)[0] = (*h)[n-1]
+	*h = (*h)[:n-1]
+	i := 0
+	for {
+		s := i
+		l, r := 2*i+1, 2*i+2
+		if l < len(*h) && f[(*h)[l]] < f[(*h)[s]] {
+			s = l
+		}
+		if r < len(*h) && f[(*h)[r]] < f[(*h)[s]] {
+			s = r
+		}
+		if s == i {
+			break
+		}
+		(*h)[i], (*h)[s] = (*h)[s], (*h)[i]
+		i = s
+	}
+	return root
 }

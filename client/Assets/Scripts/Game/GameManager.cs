@@ -21,6 +21,7 @@ namespace MMORPG.Game
         private CancellationTokenSource _cts;
         private string _localPlayerId;
         private string _characterName;
+        private int _moveSeq;
 
         public PlayerEntity LocalPlayer => _localPlayer;
         public IsometricMap Map => _map;
@@ -152,11 +153,13 @@ namespace MMORPG.Game
         public async void RequestMove(int targetX, int targetY)
         {
             if (_localPlayer == null) return;
+            int seq = ++_moveSeq;
             try
             {
                 var response = await GrpcClient.Instance.GameClient.MoveAsync(
                     new global::Game.MoveRequest { TargetX = targetX, TargetY = targetY },
                     GrpcClient.Instance.GetAuthMetadata());
+                if (seq != _moveSeq) return;
                 if (response.Success)
                 {
                     if (response.Path.Count > 0)

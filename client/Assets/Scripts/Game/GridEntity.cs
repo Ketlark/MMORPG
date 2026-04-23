@@ -13,16 +13,26 @@ namespace MMORPG.Game
         public int GridX { get; protected set; }
         public int GridY { get; protected set; }
 
-        private Queue<Vector3> _waypoints = new Queue<Vector3>();
+        private struct Waypoint
+        {
+            public Vector3 WorldPos;
+            public int X, Y;
+        }
+
+        private Queue<Waypoint> _waypoints = new Queue<Waypoint>();
         private Vector3 _currentTarget;
         private bool _isMoving;
+        private int _moveVersion;
 
         private const float SnapDistance = 0.01f;
         private const int DefaultSpriteSize = 32;
         private const int DefaultPpu = 32;
 
+        public int MoveVersion => _moveVersion;
+
         public void MoveTo(int x, int y, IsometricMap map)
         {
+            _moveVersion++;
             GridX = x;
             GridY = y;
             _waypoints.Clear();
@@ -34,6 +44,7 @@ namespace MMORPG.Game
         {
             if (pathNodes == null || pathNodes.Count == 0) return;
 
+            _moveVersion++;
             _waypoints.Clear();
 
             int start = 0;
@@ -41,21 +52,28 @@ namespace MMORPG.Game
                 start = 1;
 
             for (int i = start; i < pathNodes.Count; i++)
-                _waypoints.Enqueue(map.GridToWorld(pathNodes[i].X, pathNodes[i].Y));
-
-            var last = pathNodes[pathNodes.Count - 1];
-            GridX = last.X;
-            GridY = last.Y;
+            {
+                _waypoints.Enqueue(new Waypoint
+                {
+                    WorldPos = map.GridToWorld(pathNodes[i].X, pathNodes[i].Y),
+                    X = pathNodes[i].X,
+                    Y = pathNodes[i].Y
+                });
+            }
 
             if (_waypoints.Count > 0)
             {
-                _currentTarget = _waypoints.Dequeue();
+                var first = _waypoints.Dequeue();
+                GridX = first.X;
+                GridY = first.Y;
+                _currentTarget = first.WorldPos;
                 _isMoving = true;
             }
         }
 
         protected void SnapToGrid(int x, int y, IsometricMap map)
         {
+            _moveVersion++;
             GridX = x;
             GridY = y;
             _waypoints.Clear();
@@ -91,7 +109,12 @@ namespace MMORPG.Game
             {
                 transform.position = _currentTarget;
                 if (_waypoints.Count > 0)
-                    _currentTarget = _waypoints.Dequeue();
+                {
+                    var next = _waypoints.Dequeue();
+                    GridX = next.X;
+                    GridY = next.Y;
+                    _currentTarget = next.WorldPos;
+                }
                 else
                 {
                     _isMoving = false;
