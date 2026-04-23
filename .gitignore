@@ -1,0 +1,47 @@
+# Unity
+client/Library/
+client/Temp/
+client/Obj/
+client/Build/
+client/Builds/
+client/Logs/
+client/UserSettings/
+client/.vs/
+client/*.csproj
+client/*.unityproj
+client/*.sln
+client/*.suo
+client/*.tmp
+client/*.user
+client/*.pidb
+client/*.booproj
+client/Assets/Plugins/UnityEngine.*
+
+# Go
+server/mmorpg
+server/server
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Docker volumes
+pgdata/

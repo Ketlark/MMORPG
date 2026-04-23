@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package game;
+
+option go_package = "mmorpg/server/api/proto";
+
+import "google/protobuf/empty.proto";
+
+service GameService {
+  rpc Connect(ConnectRequest) returns (stream GameEvent);
+  rpc JoinWorld(ConnectRequest) returns (JoinWorldResponse);
+  rpc PollEvents(google.protobuf.Empty) returns (PollEventsResponse);
+  rpc Move(MoveRequest) returns (MoveResponse);
+  rpc Chat(ChatRequest) returns (google.protobuf.Empty);
+}
+
+message ConnectRequest {
+  string character_name = 1;
+}
+
+message MoveRequest {
+  int32 target_x = 1;
+  int32 target_y = 2;
+}
+
+message MoveResponse {
+  bool success = 1;
+  int32 x = 2;
+  int32 y = 3;
+  int32 action_points = 4;
+  int32 movement_points = 5;
+}
+
+message ChatRequest {
+  string message = 1;
+}
+
+message JoinWorldResponse {
+  MapData map_data = 1;
+  string player_id = 2;
+  repeated PlayerConnected players = 3;
+}
+
+message PollEventsResponse {
+  repeated GameEvent events = 1;
+}
+
+message GameEvent {
+  oneof event {
+    PlayerConnected player_connected = 1;
+    PlayerDisconnected player_disconnected = 2;
+    PlayerMoved player_moved = 3;
+    ChatMessage chat_message = 4;
+    MapData map_data = 5;
+    CombatStart combat_start = 6;
+  }
+}
+
+message PlayerConnected {
+  string player_id = 1;
+  string username = 2;
+  int32 x = 3;
+  int32 y = 4;
+}
+
+message PlayerDisconnected {
+  string player_id = 1;
+}
+
+message PlayerMoved {
+  string player_id = 1;
+  int32 x = 2;
+  int32 y = 3;
+}
+
+message ChatMessage {
+  string player_id = 1;
+  string username = 2;
+  string message = 3;
+}
+
+message MapData {
+  int32 width = 1;
+  int32 height = 2;
+  repeated MapCell cells = 3;
+}
+
+message MapCell {
+  int32 x = 1;
+  int32 y = 2;
+  int32 terrain_type = 3;
+  bool walkable = 4;
+  int32 elevation = 5;
+}
+
+message CombatStart {
+  string combat_id = 1;
+  repeated CombatPlayer players = 2;
+}
+
+message CombatPlayer {
+  string player_id = 1;
+  string username = 2;
+  int32 team = 3;
+  int32 x = 4;
+  int32 y = 5;
+}

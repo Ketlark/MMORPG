@@ -1,0 +1,18 @@
+version: v2
+modules:
+  - path: api/proto
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
+generate:
+  - name: go
+    out: api/proto/gen
+    opt:
+      - paths=source_relative
+  - name: go-grpc
+    out: api/proto/gen
+    opt:
+      - paths=source_relative

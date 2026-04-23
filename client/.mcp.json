@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ai-game-developer": {
+      "args": [
+        "port=20616",
+        "plugin-timeout=10000",
+        "client-transport=stdio",
+        "authorization=none"
+      ],
+      "command": "/Users/dehoux/dev/mmorpg/client/Library/mcp-server/osx-arm64/unity-mcp-server"
+    }
+  }
+}
