@@ -66,6 +66,8 @@ message CombatStarted {
   string combat_id = 1;
   repeated CombatFighter fighters = 2;
   repeated CombatCell cells = 3;
+  int32 width = 4;
+  int32 height = 5;
 }
 
 message CombatFighter {

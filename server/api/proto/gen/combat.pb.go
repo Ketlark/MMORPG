@@ -618,6 +618,8 @@ type CombatStarted struct {
 	CombatId      string                 `protobuf:"bytes,1,opt,name=combat_id,json=combatId,proto3" json:"combat_id,omitempty"`
 	Fighters      []*CombatFighter       `protobuf:"bytes,2,rep,name=fighters,proto3" json:"fighters,omitempty"`
 	Cells         []*CombatCell          `protobuf:"bytes,3,rep,name=cells,proto3" json:"cells,omitempty"`
+	Width         int32                  `protobuf:"varint,4,opt,name=width,proto3" json:"width,omitempty"`
+	Height        int32                  `protobuf:"varint,5,opt,name=height,proto3" json:"height,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -671,6 +673,20 @@ func (x *CombatStarted) GetCells() []*CombatCell {
 		return x.Cells
 	}
 	return nil
+}
+
+func (x *CombatStarted) GetWidth() int32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+func (x *CombatStarted) GetHeight() int32 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
 }
 
 type CombatFighter struct {
@@ -1451,11 +1467,13 @@ const file_combat_proto_rawDesc = "" +
 	"\n" +
 	"turn_ended\x18\x04 \x01(\v2\x11.combat.TurnEndedH\x00R\tturnEnded\x128\n" +
 	"\fcombat_ended\x18\x05 \x01(\v2\x13.combat.CombatEndedH\x00R\vcombatEndedB\a\n" +
-	"\x05event\"\x89\x01\n" +
+	"\x05event\"\xb7\x01\n" +
 	"\rCombatStarted\x12\x1b\n" +
 	"\tcombat_id\x18\x01 \x01(\tR\bcombatId\x121\n" +
 	"\bfighters\x18\x02 \x03(\v2\x15.combat.CombatFighterR\bfighters\x12(\n" +
-	"\x05cells\x18\x03 \x03(\v2\x12.combat.CombatCellR\x05cells\"\xfd\x01\n" +
+	"\x05cells\x18\x03 \x03(\v2\x12.combat.CombatCellR\x05cells\x12\x14\n" +
+	"\x05width\x18\x04 \x01(\x05R\x05width\x12\x16\n" +
+	"\x06height\x18\x05 \x01(\x05R\x06height\"\xfd\x01\n" +
 	"\rCombatFighter\x12\x1b\n" +
 	"\tplayer_id\x18\x01 \x01(\tR\bplayerId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x12\n" +

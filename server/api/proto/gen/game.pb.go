@@ -316,6 +316,8 @@ type GameEvent struct {
 	//	*GameEvent_ChatMessage
 	//	*GameEvent_MapData
 	//	*GameEvent_CombatStart
+	//	*GameEvent_MobSpawned
+	//	*GameEvent_MobDespawned
 	Event         isGameEvent_Event `protobuf_oneof:"event"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -412,6 +414,24 @@ func (x *GameEvent) GetCombatStart() *CombatStart {
 	return nil
 }
 
+func (x *GameEvent) GetMobSpawned() *MobSpawned {
+	if x != nil {
+		if x, ok := x.Event.(*GameEvent_MobSpawned); ok {
+			return x.MobSpawned
+		}
+	}
+	return nil
+}
+
+func (x *GameEvent) GetMobDespawned() *MobDespawned {
+	if x != nil {
+		if x, ok := x.Event.(*GameEvent_MobDespawned); ok {
+			return x.MobDespawned
+		}
+	}
+	return nil
+}
+
 type isGameEvent_Event interface {
 	isGameEvent_Event()
 }
@@ -440,6 +460,14 @@ type GameEvent_CombatStart struct {
 	CombatStart *CombatStart `protobuf:"bytes,6,opt,name=combat_start,json=combatStart,proto3,oneof"`
 }
 
+type GameEvent_MobSpawned struct {
+	MobSpawned *MobSpawned `protobuf:"bytes,7,opt,name=mob_spawned,json=mobSpawned,proto3,oneof"`
+}
+
+type GameEvent_MobDespawned struct {
+	MobDespawned *MobDespawned `protobuf:"bytes,8,opt,name=mob_despawned,json=mobDespawned,proto3,oneof"`
+}
+
 func (*GameEvent_PlayerConnected) isGameEvent_Event() {}
 
 func (*GameEvent_PlayerDisconnected) isGameEvent_Event() {}
@@ -451,6 +479,10 @@ func (*GameEvent_ChatMessage) isGameEvent_Event() {}
 func (*GameEvent_MapData) isGameEvent_Event() {}
 
 func (*GameEvent_CombatStart) isGameEvent_Event() {}
+
+func (*GameEvent_MobSpawned) isGameEvent_Event() {}
+
+func (*GameEvent_MobDespawned) isGameEvent_Event() {}
 
 type PlayerConnected struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -956,6 +988,118 @@ func (x *CombatPlayer) GetY() int32 {
 	return 0
 }
 
+type MobSpawned struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MobId         string                 `protobuf:"bytes,1,opt,name=mob_id,json=mobId,proto3" json:"mob_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	X             int32                  `protobuf:"varint,3,opt,name=x,proto3" json:"x,omitempty"`
+	Y             int32                  `protobuf:"varint,4,opt,name=y,proto3" json:"y,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MobSpawned) Reset() {
+	*x = MobSpawned{}
+	mi := &file_game_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MobSpawned) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MobSpawned) ProtoMessage() {}
+
+func (x *MobSpawned) ProtoReflect() protoreflect.Message {
+	mi := &file_game_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MobSpawned.ProtoReflect.Descriptor instead.
+func (*MobSpawned) Descriptor() ([]byte, []int) {
+	return file_game_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *MobSpawned) GetMobId() string {
+	if x != nil {
+		return x.MobId
+	}
+	return ""
+}
+
+func (x *MobSpawned) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *MobSpawned) GetX() int32 {
+	if x != nil {
+		return x.X
+	}
+	return 0
+}
+
+func (x *MobSpawned) GetY() int32 {
+	if x != nil {
+		return x.Y
+	}
+	return 0
+}
+
+type MobDespawned struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MobId         string                 `protobuf:"bytes,1,opt,name=mob_id,json=mobId,proto3" json:"mob_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MobDespawned) Reset() {
+	*x = MobDespawned{}
+	mi := &file_game_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MobDespawned) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MobDespawned) ProtoMessage() {}
+
+func (x *MobDespawned) ProtoReflect() protoreflect.Message {
+	mi := &file_game_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MobDespawned.ProtoReflect.Descriptor instead.
+func (*MobDespawned) Descriptor() ([]byte, []int) {
+	return file_game_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *MobDespawned) GetMobId() string {
+	if x != nil {
+		return x.MobId
+	}
+	return ""
+}
+
 var File_game_proto protoreflect.FileDescriptor
 
 const file_game_proto_rawDesc = "" +
@@ -979,14 +1123,17 @@ const file_game_proto_rawDesc = "" +
 	"\x04path\x18\x06 \x03(\v2\x0e.game.PathNodeR\x04path\x12\x1b\n" +
 	"\tpath_cost\x18\a \x01(\x05R\bpathCost\"'\n" +
 	"\vChatRequest\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"\xf9\x02\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\xe9\x03\n" +
 	"\tGameEvent\x12B\n" +
 	"\x10player_connected\x18\x01 \x01(\v2\x15.game.PlayerConnectedH\x00R\x0fplayerConnected\x12K\n" +
 	"\x13player_disconnected\x18\x02 \x01(\v2\x18.game.PlayerDisconnectedH\x00R\x12playerDisconnected\x126\n" +
 	"\fplayer_moved\x18\x03 \x01(\v2\x11.game.PlayerMovedH\x00R\vplayerMoved\x126\n" +
 	"\fchat_message\x18\x04 \x01(\v2\x11.game.ChatMessageH\x00R\vchatMessage\x12*\n" +
 	"\bmap_data\x18\x05 \x01(\v2\r.game.MapDataH\x00R\amapData\x126\n" +
-	"\fcombat_start\x18\x06 \x01(\v2\x11.game.CombatStartH\x00R\vcombatStartB\a\n" +
+	"\fcombat_start\x18\x06 \x01(\v2\x11.game.CombatStartH\x00R\vcombatStart\x123\n" +
+	"\vmob_spawned\x18\a \x01(\v2\x10.game.MobSpawnedH\x00R\n" +
+	"mobSpawned\x129\n" +
+	"\rmob_despawned\x18\b \x01(\v2\x12.game.MobDespawnedH\x00R\fmobDespawnedB\a\n" +
 	"\x05event\"f\n" +
 	"\x0fPlayerConnected\x12\x1b\n" +
 	"\tplayer_id\x18\x01 \x01(\tR\bplayerId\x12\x1a\n" +
@@ -1022,7 +1169,15 @@ const file_game_proto_rawDesc = "" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x12\n" +
 	"\x04team\x18\x03 \x01(\x05R\x04team\x12\f\n" +
 	"\x01x\x18\x04 \x01(\x05R\x01x\x12\f\n" +
-	"\x01y\x18\x05 \x01(\x05R\x01y2\xa3\x01\n" +
+	"\x01y\x18\x05 \x01(\x05R\x01y\"S\n" +
+	"\n" +
+	"MobSpawned\x12\x15\n" +
+	"\x06mob_id\x18\x01 \x01(\tR\x05mobId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\f\n" +
+	"\x01x\x18\x03 \x01(\x05R\x01x\x12\f\n" +
+	"\x01y\x18\x04 \x01(\x05R\x01y\"%\n" +
+	"\fMobDespawned\x12\x15\n" +
+	"\x06mob_id\x18\x01 \x01(\tR\x05mobId2\xa3\x01\n" +
 	"\vGameService\x122\n" +
 	"\aConnect\x12\x14.game.ConnectRequest\x1a\x0f.game.GameEvent0\x01\x12-\n" +
 	"\x04Move\x12\x11.game.MoveRequest\x1a\x12.game.MoveResponse\x121\n" +
@@ -1040,7 +1195,7 @@ func file_game_proto_rawDescGZIP() []byte {
 	return file_game_proto_rawDescData
 }
 
-var file_game_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_game_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_game_proto_goTypes = []any{
 	(*ConnectRequest)(nil),     // 0: game.ConnectRequest
 	(*MoveRequest)(nil),        // 1: game.MoveRequest
@@ -1056,7 +1211,9 @@ var file_game_proto_goTypes = []any{
 	(*MapCell)(nil),            // 11: game.MapCell
 	(*CombatStart)(nil),        // 12: game.CombatStart
 	(*CombatPlayer)(nil),       // 13: game.CombatPlayer
-	(*emptypb.Empty)(nil),      // 14: google.protobuf.Empty
+	(*MobSpawned)(nil),         // 14: game.MobSpawned
+	(*MobDespawned)(nil),       // 15: game.MobDespawned
+	(*emptypb.Empty)(nil),      // 16: google.protobuf.Empty
 }
 var file_game_proto_depIdxs = []int32{
 	2,  // 0: game.MoveResponse.path:type_name -> game.PathNode
@@ -1066,20 +1223,22 @@ var file_game_proto_depIdxs = []int32{
 	9,  // 4: game.GameEvent.chat_message:type_name -> game.ChatMessage
 	10, // 5: game.GameEvent.map_data:type_name -> game.MapData
 	12, // 6: game.GameEvent.combat_start:type_name -> game.CombatStart
-	2,  // 7: game.PlayerMoved.path:type_name -> game.PathNode
-	11, // 8: game.MapData.cells:type_name -> game.MapCell
-	13, // 9: game.CombatStart.players:type_name -> game.CombatPlayer
-	0,  // 10: game.GameService.Connect:input_type -> game.ConnectRequest
-	1,  // 11: game.GameService.Move:input_type -> game.MoveRequest
-	4,  // 12: game.GameService.Chat:input_type -> game.ChatRequest
-	5,  // 13: game.GameService.Connect:output_type -> game.GameEvent
-	3,  // 14: game.GameService.Move:output_type -> game.MoveResponse
-	14, // 15: game.GameService.Chat:output_type -> google.protobuf.Empty
-	13, // [13:16] is the sub-list for method output_type
-	10, // [10:13] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	14, // 7: game.GameEvent.mob_spawned:type_name -> game.MobSpawned
+	15, // 8: game.GameEvent.mob_despawned:type_name -> game.MobDespawned
+	2,  // 9: game.PlayerMoved.path:type_name -> game.PathNode
+	11, // 10: game.MapData.cells:type_name -> game.MapCell
+	13, // 11: game.CombatStart.players:type_name -> game.CombatPlayer
+	0,  // 12: game.GameService.Connect:input_type -> game.ConnectRequest
+	1,  // 13: game.GameService.Move:input_type -> game.MoveRequest
+	4,  // 14: game.GameService.Chat:input_type -> game.ChatRequest
+	5,  // 15: game.GameService.Connect:output_type -> game.GameEvent
+	3,  // 16: game.GameService.Move:output_type -> game.MoveResponse
+	16, // 17: game.GameService.Chat:output_type -> google.protobuf.Empty
+	15, // [15:18] is the sub-list for method output_type
+	12, // [12:15] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_game_proto_init() }
@@ -1094,6 +1253,8 @@ func file_game_proto_init() {
 		(*GameEvent_ChatMessage)(nil),
 		(*GameEvent_MapData)(nil),
 		(*GameEvent_CombatStart)(nil),
+		(*GameEvent_MobSpawned)(nil),
+		(*GameEvent_MobDespawned)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1101,7 +1262,7 @@ func file_game_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_game_proto_rawDesc), len(file_game_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

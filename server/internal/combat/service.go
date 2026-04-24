@@ -66,9 +66,17 @@ func NewCombatService() *CombatService {
 }
 
 func (s *CombatService) CreateCombat(fighters []*CombatFighter) string {
-	combatID := uuid.New().String()
 	width, height := combatGridWidth, combatGridHeight
 	cells := generateCombatGrid(width, height)
+	return s.createCombat(fighters, cells, width, height)
+}
+
+func (s *CombatService) CreateCombatWithGrid(fighters []*CombatFighter, cells []*pb.CombatCell, width, height int) string {
+	return s.createCombat(fighters, cells, width, height)
+}
+
+func (s *CombatService) createCombat(fighters []*CombatFighter, cells []*pb.CombatCell, width, height int) string {
+	combatID := uuid.New().String()
 
 	combat := &Combat{
 		ID:         combatID,
@@ -98,12 +106,16 @@ func (s *CombatService) CreateCombat(fighters []*CombatFighter) string {
 				CombatId: combatID,
 				Fighters: buildCombatFighters(combat),
 				Cells:    cells,
+				Width:    int32(width),
+				Height:   int32(height),
 			},
 		},
 	}
 	for _, f := range fighters {
-		if err := f.Stream.Send(started); err != nil {
-			log.Printf("Failed to send combat start to %s: %v", f.PlayerID, err)
+		if f.Stream != nil {
+			if err := f.Stream.Send(started); err != nil {
+				log.Printf("Failed to send combat start to %s: %v", f.PlayerID, err)
+			}
 		}
 	}
 
@@ -134,7 +146,24 @@ func (s *CombatService) JoinCombat(req *pb.JoinCombatRequest, stream pb.CombatSe
 		return status.Error(codes.NotFound, "fighter not found in combat")
 	}
 	fighter.Stream = stream
+
+	// Resync: send current combat state to reconnecting/joining player.
+	started := &pb.CombatEvent{
+		Event: &pb.CombatEvent_CombatStarted{
+			CombatStarted: &pb.CombatStarted{
+				CombatId: combat.ID,
+				Fighters: buildCombatFighters(combat),
+				Cells:    combat.Cells,
+				Width:    int32(combat.Width),
+				Height:   int32(combat.Height),
+			},
+		},
+	}
 	combat.mu.Unlock()
+
+	if err := stream.Send(started); err != nil {
+		log.Printf("Failed to resync combat start to %s: %v", playerID, err)
+	}
 
 	<-ctx.Done()
 
@@ -215,9 +244,27 @@ func (s *CombatService) EndTurn(ctx context.Context, req *pb.EndTurnRequest) (*p
 		return nil, status.Error(codes.FailedPrecondition, "not your turn")
 	}
 
+	turnEndedEvent, turnStartedEvent := s.advanceTurnLocked(combat)
+	combat.mu.Unlock()
+
+	broadcastCombatEvent(combat, turnEndedEvent)
+	if turnStartedEvent != nil {
+		broadcastCombatEvent(combat, turnStartedEvent)
+	}
+
+	return &pb.EndTurnResponse{
+		Success:      true,
+		NextPlayerId: combat.TurnOrder[combat.CurrentTurn],
+	}, nil
+}
+
+// advanceTurnLocked advances the turn and returns the events.
+// Must be called with combat.mu held.
+func (s *CombatService) advanceTurnLocked(combat *Combat) (*pb.CombatEvent, *pb.CombatEvent) {
+	currentPlayerID := combat.TurnOrder[combat.CurrentTurn]
 	turnEndedEvent := &pb.CombatEvent{
 		Event: &pb.CombatEvent_TurnEnded{
-			TurnEnded: &pb.TurnEnded{PlayerId: playerID},
+			TurnEnded: &pb.TurnEnded{PlayerId: currentPlayerID},
 		},
 	}
 
@@ -226,8 +273,8 @@ func (s *CombatService) EndTurn(ctx context.Context, req *pb.EndTurnRequest) (*p
 	nextPlayerID := combat.TurnOrder[combat.CurrentTurn]
 	var turnStartedEvent *pb.CombatEvent
 	if nextFighter, ok := combat.Fighters[nextPlayerID]; ok {
-		nextFighter.AP = 6
-		nextFighter.MP = 3
+		nextFighter.AP = defaultCombatAP
+		nextFighter.MP = defaultCombatMP
 		turnStartedEvent = &pb.CombatEvent{
 			Event: &pb.CombatEvent_TurnStarted{
 				TurnStarted: &pb.TurnStarted{
@@ -239,17 +286,7 @@ func (s *CombatService) EndTurn(ctx context.Context, req *pb.EndTurnRequest) (*p
 		}
 	}
 
-	combat.mu.Unlock()
-
-	broadcastCombatEvent(combat, turnEndedEvent)
-	if turnStartedEvent != nil {
-		broadcastCombatEvent(combat, turnStartedEvent)
-	}
-
-	return &pb.EndTurnResponse{
-		Success:      true,
-		NextPlayerId: nextPlayerID,
-	}, nil
+	return turnEndedEvent, turnStartedEvent
 }
 
 // handleMoveLocked must be called with combat.mu held.

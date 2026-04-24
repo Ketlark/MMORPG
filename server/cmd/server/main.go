@@ -186,9 +186,11 @@ func main() {
 		),
 	)
 
+	combatSvc := combat.NewCombatService()
+
 	pb.RegisterAuthServiceServer(grpcServer, auth.NewAuthService(db, cfg.JWTSecret))
-	pb.RegisterGameServiceServer(grpcServer, game.NewService(rdb))
-	pb.RegisterCombatServiceServer(grpcServer, combat.NewCombatService())
+	pb.RegisterGameServiceServer(grpcServer, game.NewService(rdb, game.NewCombatAdapter(combatSvc)))
+	pb.RegisterCombatServiceServer(grpcServer, combatSvc)
 
 	listener, err := net.Listen("tcp", cfg.ServerPort)
 	if err != nil {

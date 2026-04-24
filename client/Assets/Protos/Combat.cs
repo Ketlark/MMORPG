@@ -42,36 +42,36 @@ namespace Combat {
             "LQoNcGxheWVyX2FjdGlvbhgDIAEoCzIULmNvbWJhdC5QbGF5ZXJBY3Rpb25I",
             "ABInCgp0dXJuX2VuZGVkGAQgASgLMhEuY29tYmF0LlR1cm5FbmRlZEgAEisK",
             "DGNvbWJhdF9lbmRlZBgFIAEoCzITLmNvbWJhdC5Db21iYXRFbmRlZEgAQgcK",
-            "BWV2ZW50Im4KDUNvbWJhdFN0YXJ0ZWQSEQoJY29tYmF0X2lkGAEgASgJEicK",
-            "CGZpZ2h0ZXJzGAIgAygLMhUuY29tYmF0LkNvbWJhdEZpZ2h0ZXISIQoFY2Vs",
-            "bHMYAyADKAsyEi5jb21iYXQuQ29tYmF0Q2VsbCKsAQoNQ29tYmF0RmlnaHRl",
-            "chIRCglwbGF5ZXJfaWQYASABKAkSEAoIdXNlcm5hbWUYAiABKAkSDAoEdGVh",
-            "bRgDIAEoBRIJCgF4GAQgASgFEgkKAXkYBSABKAUSDgoGaGVhbHRoGAYgASgF",
-            "EhIKCm1heF9oZWFsdGgYByABKAUSFQoNYWN0aW9uX3BvaW50cxgIIAEoBRIX",
-            "Cg9tb3ZlbWVudF9wb2ludHMYCSABKAUiNAoKQ29tYmF0Q2VsbBIJCgF4GAEg",
-            "ASgFEgkKAXkYAiABKAUSEAoId2Fsa2FibGUYAyABKAgiUAoLVHVyblN0YXJ0",
-            "ZWQSEQoJcGxheWVyX2lkGAEgASgJEhUKDWFjdGlvbl9wb2ludHMYAiABKAUS",
-            "FwoPbW92ZW1lbnRfcG9pbnRzGAMgASgFIqABCgxQbGF5ZXJBY3Rpb24SEQoJ",
-            "cGxheWVyX2lkGAEgASgJEiIKBG1vdmUYAiABKAsyEi5jb21iYXQuTW92ZVJl",
-            "c3VsdEgAEiQKBXNwZWxsGAMgASgLMhMuY29tYmF0LlNwZWxsUmVzdWx0SAAS",
-            "IgoEc2tpcBgEIAEoCzISLmNvbWJhdC5Ta2lwUmVzdWx0SABCDwoNYWN0aW9u",
-            "X3Jlc3VsdCJICgpNb3ZlUmVzdWx0Eg4KBmZyb21feBgBIAEoBRIOCgZmcm9t",
-            "X3kYAiABKAUSDAoEdG9feBgDIAEoBRIMCgR0b195GAQgASgFIo4BCgtTcGVs",
-            "bFJlc3VsdBIQCghzcGVsbF9pZBgBIAEoCRIQCghjYXN0ZXJfeBgCIAEoBRIQ",
-            "CghjYXN0ZXJfeRgDIAEoBRIQCgh0YXJnZXRfeBgEIAEoBRIQCgh0YXJnZXRf",
-            "eRgFIAEoBRIlCgdkYW1hZ2VzGAYgAygLMhQuY29tYmF0LkRhbWFnZVJlc3Vs",
-            "dCJLCgxEYW1hZ2VSZXN1bHQSEQoJdGFyZ2V0X2lkGAEgASgJEg4KBmRhbWFn",
-            "ZRgCIAEoBRIYChBoZWFsdGhfcmVtYWluaW5nGAMgASgFIgwKClNraXBSZXN1",
-            "bHQiHgoJVHVybkVuZGVkEhEKCXBsYXllcl9pZBgBIAEoCSJKCgtDb21iYXRF",
-            "bmRlZBIUCgx3aW5uaW5nX3RlYW0YASABKAUSJQoHcmV3YXJkcxgCIAMoCzIU",
-            "LmNvbWJhdC5Db21iYXRSZXdhcmQiQwoMQ29tYmF0UmV3YXJkEhEKCXBsYXll",
-            "cl9pZBgBIAEoCRISCgpleHBlcmllbmNlGAIgASgFEgwKBGdvbGQYAyABKAUy",
-            "yAEKDUNvbWJhdFNlcnZpY2USPgoKSm9pbkNvbWJhdBIZLmNvbWJhdC5Kb2lu",
-            "Q29tYmF0UmVxdWVzdBoTLmNvbWJhdC5Db21iYXRFdmVudDABEjsKDVBlcmZv",
-            "cm1BY3Rpb24SFC5jb21iYXQuQ29tYmF0QWN0aW9uGhQuY29tYmF0LkFjdGlv",
-            "blJlc3VsdBI6CgdFbmRUdXJuEhYuY29tYmF0LkVuZFR1cm5SZXF1ZXN0Ghcu",
-            "Y29tYmF0LkVuZFR1cm5SZXNwb25zZUIZWhdtbW9ycGcvc2VydmVyL2FwaS9w",
-            "cm90b2IGcHJvdG8z"));
+            "BWV2ZW50Io0BCg1Db21iYXRTdGFydGVkEhEKCWNvbWJhdF9pZBgBIAEoCRIn",
+            "CghmaWdodGVycxgCIAMoCzIVLmNvbWJhdC5Db21iYXRGaWdodGVyEiEKBWNl",
+            "bGxzGAMgAygLMhIuY29tYmF0LkNvbWJhdENlbGwSDQoFd2lkdGgYBCABKAUS",
+            "DgoGaGVpZ2h0GAUgASgFIqwBCg1Db21iYXRGaWdodGVyEhEKCXBsYXllcl9p",
+            "ZBgBIAEoCRIQCgh1c2VybmFtZRgCIAEoCRIMCgR0ZWFtGAMgASgFEgkKAXgY",
+            "BCABKAUSCQoBeRgFIAEoBRIOCgZoZWFsdGgYBiABKAUSEgoKbWF4X2hlYWx0",
+            "aBgHIAEoBRIVCg1hY3Rpb25fcG9pbnRzGAggASgFEhcKD21vdmVtZW50X3Bv",
+            "aW50cxgJIAEoBSI0CgpDb21iYXRDZWxsEgkKAXgYASABKAUSCQoBeRgCIAEo",
+            "BRIQCgh3YWxrYWJsZRgDIAEoCCJQCgtUdXJuU3RhcnRlZBIRCglwbGF5ZXJf",
+            "aWQYASABKAkSFQoNYWN0aW9uX3BvaW50cxgCIAEoBRIXCg9tb3ZlbWVudF9w",
+            "b2ludHMYAyABKAUioAEKDFBsYXllckFjdGlvbhIRCglwbGF5ZXJfaWQYASAB",
+            "KAkSIgoEbW92ZRgCIAEoCzISLmNvbWJhdC5Nb3ZlUmVzdWx0SAASJAoFc3Bl",
+            "bGwYAyABKAsyEy5jb21iYXQuU3BlbGxSZXN1bHRIABIiCgRza2lwGAQgASgL",
+            "MhIuY29tYmF0LlNraXBSZXN1bHRIAEIPCg1hY3Rpb25fcmVzdWx0IkgKCk1v",
+            "dmVSZXN1bHQSDgoGZnJvbV94GAEgASgFEg4KBmZyb21feRgCIAEoBRIMCgR0",
+            "b194GAMgASgFEgwKBHRvX3kYBCABKAUijgEKC1NwZWxsUmVzdWx0EhAKCHNw",
+            "ZWxsX2lkGAEgASgJEhAKCGNhc3Rlcl94GAIgASgFEhAKCGNhc3Rlcl95GAMg",
+            "ASgFEhAKCHRhcmdldF94GAQgASgFEhAKCHRhcmdldF95GAUgASgFEiUKB2Rh",
+            "bWFnZXMYBiADKAsyFC5jb21iYXQuRGFtYWdlUmVzdWx0IksKDERhbWFnZVJl",
+            "c3VsdBIRCgl0YXJnZXRfaWQYASABKAkSDgoGZGFtYWdlGAIgASgFEhgKEGhl",
+            "YWx0aF9yZW1haW5pbmcYAyABKAUiDAoKU2tpcFJlc3VsdCIeCglUdXJuRW5k",
+            "ZWQSEQoJcGxheWVyX2lkGAEgASgJIkoKC0NvbWJhdEVuZGVkEhQKDHdpbm5p",
+            "bmdfdGVhbRgBIAEoBRIlCgdyZXdhcmRzGAIgAygLMhQuY29tYmF0LkNvbWJh",
+            "dFJld2FyZCJDCgxDb21iYXRSZXdhcmQSEQoJcGxheWVyX2lkGAEgASgJEhIK",
+            "CmV4cGVyaWVuY2UYAiABKAUSDAoEZ29sZBgDIAEoBTLIAQoNQ29tYmF0U2Vy",
+            "dmljZRI+CgpKb2luQ29tYmF0EhkuY29tYmF0LkpvaW5Db21iYXRSZXF1ZXN0",
+            "GhMuY29tYmF0LkNvbWJhdEV2ZW50MAESOwoNUGVyZm9ybUFjdGlvbhIULmNv",
+            "bWJhdC5Db21iYXRBY3Rpb24aFC5jb21iYXQuQWN0aW9uUmVzdWx0EjoKB0Vu",
+            "ZFR1cm4SFi5jb21iYXQuRW5kVHVyblJlcXVlc3QaFy5jb21iYXQuRW5kVHVy",
+            "blJlc3BvbnNlQhlaF21tb3JwZy9zZXJ2ZXIvYXBpL3Byb3RvYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -84,7 +84,7 @@ namespace Combat {
             new pbr::GeneratedClrTypeInfo(typeof(global::Combat.EndTurnRequest), global::Combat.EndTurnRequest.Parser, new[]{ "CombatId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Combat.EndTurnResponse), global::Combat.EndTurnResponse.Parser, new[]{ "Success", "NextPlayerId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Combat.CombatEvent), global::Combat.CombatEvent.Parser, new[]{ "CombatStarted", "TurnStarted", "PlayerAction", "TurnEnded", "CombatEnded" }, new[]{ "Event" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Combat.CombatStarted), global::Combat.CombatStarted.Parser, new[]{ "CombatId", "Fighters", "Cells" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Combat.CombatStarted), global::Combat.CombatStarted.Parser, new[]{ "CombatId", "Fighters", "Cells", "Width", "Height" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Combat.CombatFighter), global::Combat.CombatFighter.Parser, new[]{ "PlayerId", "Username", "Team", "X", "Y", "Health", "MaxHealth", "ActionPoints", "MovementPoints" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Combat.CombatCell), global::Combat.CombatCell.Parser, new[]{ "X", "Y", "Walkable" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Combat.TurnStarted), global::Combat.TurnStarted.Parser, new[]{ "PlayerId", "ActionPoints", "MovementPoints" }, null, null, null, null),
@@ -2585,6 +2585,8 @@ namespace Combat {
       combatId_ = other.combatId_;
       fighters_ = other.fighters_.Clone();
       cells_ = other.cells_.Clone();
+      width_ = other.width_;
+      height_ = other.height_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -2628,6 +2630,30 @@ namespace Combat {
       get { return cells_; }
     }
 
+    /// <summary>Field number for the "width" field.</summary>
+    public const int WidthFieldNumber = 4;
+    private int width_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int Width {
+      get { return width_; }
+      set {
+        width_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "height" field.</summary>
+    public const int HeightFieldNumber = 5;
+    private int height_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int Height {
+      get { return height_; }
+      set {
+        height_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -2646,6 +2672,8 @@ namespace Combat {
       if (CombatId != other.CombatId) return false;
       if(!fighters_.Equals(other.fighters_)) return false;
       if(!cells_.Equals(other.cells_)) return false;
+      if (Width != other.Width) return false;
+      if (Height != other.Height) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -2656,6 +2684,8 @@ namespace Combat {
       if (CombatId.Length != 0) hash ^= CombatId.GetHashCode();
       hash ^= fighters_.GetHashCode();
       hash ^= cells_.GetHashCode();
+      if (Width != 0) hash ^= Width.GetHashCode();
+      if (Height != 0) hash ^= Height.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -2680,6 +2710,14 @@ namespace Combat {
       }
       fighters_.WriteTo(output, _repeated_fighters_codec);
       cells_.WriteTo(output, _repeated_cells_codec);
+      if (Width != 0) {
+        output.WriteRawTag(32);
+        output.WriteInt32(Width);
+      }
+      if (Height != 0) {
+        output.WriteRawTag(40);
+        output.WriteInt32(Height);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -2696,6 +2734,14 @@ namespace Combat {
       }
       fighters_.WriteTo(ref output, _repeated_fighters_codec);
       cells_.WriteTo(ref output, _repeated_cells_codec);
+      if (Width != 0) {
+        output.WriteRawTag(32);
+        output.WriteInt32(Width);
+      }
+      if (Height != 0) {
+        output.WriteRawTag(40);
+        output.WriteInt32(Height);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -2711,6 +2757,12 @@ namespace Combat {
       }
       size += fighters_.CalculateSize(_repeated_fighters_codec);
       size += cells_.CalculateSize(_repeated_cells_codec);
+      if (Width != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Width);
+      }
+      if (Height != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Height);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -2728,6 +2780,12 @@ namespace Combat {
       }
       fighters_.Add(other.fighters_);
       cells_.Add(other.cells_);
+      if (other.Width != 0) {
+        Width = other.Width;
+      }
+      if (other.Height != 0) {
+        Height = other.Height;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -2759,6 +2817,14 @@ namespace Combat {
             cells_.AddEntriesFrom(input, _repeated_cells_codec);
             break;
           }
+          case 32: {
+            Width = input.ReadInt32();
+            break;
+          }
+          case 40: {
+            Height = input.ReadInt32();
+            break;
+          }
         }
       }
     #endif
@@ -2788,6 +2854,14 @@ namespace Combat {
           }
           case 26: {
             cells_.AddEntriesFrom(ref input, _repeated_cells_codec);
+            break;
+          }
+          case 32: {
+            Width = input.ReadInt32();
+            break;
+          }
+          case 40: {
+            Height = input.ReadInt32();
             break;
           }
         }

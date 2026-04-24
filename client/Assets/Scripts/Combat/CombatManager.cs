@@ -108,8 +108,8 @@ namespace MMORPG.Combat
                 terrain[i] = 0;
                 walkable[i] = started.Cells[i].Walkable;
             }
-            var combatWidth = started.Cells.Count > 0 ? (int)System.Math.Sqrt(started.Cells.Count) : 14;
-            var combatHeight = started.Cells.Count > 0 ? started.Cells.Count / combatWidth : 18;
+            var combatWidth = started.Width > 0 ? (int)started.Width : 14;
+            var combatHeight = started.Height > 0 ? (int)started.Height : 18;
             _combatMap.LoadMapFromProto(combatWidth, combatHeight, terrain, walkable);
         }
 

@@ -7,10 +7,12 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	pb "mmorpg/server/api/proto/gen"
 
 	"mmorpg/server/internal/auth"
+	"mmorpg/server/internal/game/domain"
 
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
@@ -50,22 +52,31 @@ type playerStream struct {
 type Service struct {
 	pb.UnimplementedGameServiceServer
 
-	rdb *redis.Client
-	mu  sync.RWMutex
+	rdb           *redis.Client
+	mu            sync.RWMutex
 
-	players map[string]*PlayerState
-	streams map[string]*playerStream
-	mapData *pb.MapData
+	players       map[string]*PlayerState
+	streams       map[string]*playerStream
+	mapData       *pb.MapData
+	spawner       *MobSpawner
+	combatStarter CombatStarter
 }
 
 // NewService creates a new game service instance.
-func NewService(rdb *redis.Client) *Service {
-	return &Service{
-		rdb:     rdb,
-		players: make(map[string]*PlayerState),
-		streams: make(map[string]*playerStream),
-		mapData: GenerateTestMap(),
+func NewService(rdb *redis.Client, combatStarter CombatStarter) *Service {
+	s := &Service{
+		rdb:           rdb,
+		players:       make(map[string]*PlayerState),
+		streams:       make(map[string]*playerStream),
+		mapData:       GenerateTestMap(),
+		combatStarter: combatStarter,
 	}
+
+	factory := domain.NewMobFactory()
+	s.spawner = NewMobSpawner(factory, s, combatStarter, s.mapData)
+	s.spawner.SpawnDefaultMobs()
+
+	return s
 }
 
 // Connect is a server-side streaming RPC. When a player connects:
@@ -196,6 +207,22 @@ func (s *Service) Connect(req *pb.ConnectRequest, stream grpc.ServerStreamingSer
 		},
 	}, playerID)
 
+	// 5. Send mob spawn events.
+	for _, mob := range s.spawner.GetAllMobs() {
+		if err := stream.Send(&pb.GameEvent{
+			Event: &pb.GameEvent_MobSpawned{
+				MobSpawned: &pb.MobSpawned{
+					MobId: mob.ID,
+					Name:  mob.Name,
+					X:     mob.Position.X,
+					Y:     mob.Position.Y,
+				},
+			},
+		}); err != nil {
+			log.Printf("[Game] Failed to send mob %s to %s: %v", mob.ID, playerID, err)
+		}
+	}
+
 	log.Printf("[Game] Player %s (%s) connected at (%d,%d)", playerID, characterName, x, y)
 
 	// 4. Keep the stream open, waiting for context cancellation (client disconnect).
@@ -203,10 +230,9 @@ func (s *Service) Connect(req *pb.ConnectRequest, stream grpc.ServerStreamingSer
 	return nil
 }
 
-// Move handles a player movement request. It validates the target cell is
-// within bounds and walkable, checks the Manhattan distance against available
-// movement points, updates position in Redis and memory, then broadcasts the
-// move event to all connected players.
+// Move handles a player movement request. If the target cell contains a mob,
+// combat is triggered instead of moving. Otherwise it validates the target,
+// computes an A* path, and broadcasts the move.
 func (s *Service) Move(ctx context.Context, req *pb.MoveRequest) (*pb.MoveResponse, error) {
 	playerID := auth.GetUserID(ctx)
 	if playerID == "" {
@@ -223,6 +249,18 @@ func (s *Service) Move(ctx context.Context, req *pb.MoveRequest) (*pb.MoveRespon
 
 	targetX := req.TargetX
 	targetY := req.TargetY
+
+	// Check for mob at target cell → trigger combat.
+	if mob := s.spawner.GetMobAt(targetX, targetY); mob != nil {
+		s.triggerCombat(player, mob)
+		return &pb.MoveResponse{
+			Success:        false,
+			X:              player.X,
+			Y:              player.Y,
+			ActionPoints:   player.AP,
+			MovementPoints: player.MP,
+		}, nil
+	}
 
 	// Validate map bounds.
 	if targetX < 0 || targetX >= s.mapData.Width || targetY < 0 || targetY >= s.mapData.Height {
@@ -303,6 +341,73 @@ func (s *Service) Move(ctx context.Context, req *pb.MoveRequest) (*pb.MoveRespon
 	}, nil
 }
 
+// triggerCombat starts a combat between a player and a mob.
+func (s *Service) triggerCombat(player *PlayerState, mob *domain.Mob) {
+	cells, w, h := s.spawner.BuildCombatGrid()
+	fighters := buildCombatFighters(player, mob)
+
+	combatID := s.combatStarter.CreateCombatWithGrid(fighters, cells, w, h)
+
+	// Remove mob from world map.
+	s.spawner.RemoveMob(mob.ID)
+
+	// Send CombatStart to player via game stream.
+	s.mu.RLock()
+	ps, ok := s.streams[player.PlayerID]
+	s.mu.RUnlock()
+	if ok {
+		if err := ps.stream.Send(&pb.GameEvent{
+			Event: &pb.GameEvent_CombatStart{
+				CombatStart: &pb.CombatStart{
+					CombatId: combatID,
+					Players: []*pb.CombatPlayer{
+						{PlayerId: player.PlayerID, Username: player.Username, Team: 0, X: player.X, Y: player.Y},
+						{PlayerId: mob.ID, Username: mob.Name, Team: 1, X: mob.Position.X, Y: mob.Position.Y},
+					},
+				},
+			},
+		}); err != nil {
+			log.Printf("[Game] Failed to send CombatStart to %s: %v", player.PlayerID, err)
+		}
+	}
+
+	// Start mob AI.
+	behavior := domain.NewMobFactory().CreateBehavior(mob.Type)
+	go s.combatStarter.RunMobAI(combatID, mob.ID, behavior)
+
+	// Schedule respawn.
+	s.spawner.ScheduleRespawn(mob, 30*time.Second)
+
+	log.Printf("[Game] Combat %s started between %s and %s", combatID, player.Username, mob.Name)
+}
+
+func buildCombatFighters(player *PlayerState, mob *domain.Mob) []FighterData {
+	return []FighterData{
+		{
+			ID:        player.PlayerID,
+			Username:  player.Username,
+			Team:      0,
+			X:         int(player.X),
+			Y:         int(player.Y),
+			Health:    int(player.Health),
+			MaxHealth: int(player.MaxHealth),
+			AP:        defaultAP,
+			MP:        defaultMP,
+		},
+		{
+			ID:        mob.ID,
+			Username:  mob.Name,
+			Team:      mob.Team,
+			X:         int(mob.Position.X),
+			Y:         int(mob.Position.Y),
+			Health:    mob.Stats.Health,
+			MaxHealth: mob.Stats.MaxHealth,
+			AP:        mob.Stats.AP,
+			MP:        mob.Stats.MP,
+		},
+	}
+}
+
 // Chat broadcasts a chat message from a player to all connected players.
 func (s *Service) Chat(ctx context.Context, req *pb.ChatRequest) (*emptypb.Empty, error) {
 	playerID := auth.GetUserID(ctx)
@@ -350,6 +455,11 @@ func (s *Service) broadcast(event *pb.GameEvent, excludeID string) {
 			log.Printf("[Game] broadcast to %s failed: %v", pid, err)
 		}
 	}
+}
+
+// Broadcast implements the EventBroadcaster port.
+func (s *Service) Broadcast(event *pb.GameEvent, excludePlayerID string) {
+	s.broadcast(event, excludePlayerID)
 }
 
 // loadPosition reads a player's last known position from Redis.

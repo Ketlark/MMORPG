@@ -95,6 +95,15 @@ namespace MMORPG.Game
                 case global::Game.GameEvent.EventOneofCase.ChatMessage:
                     HandleChatMessage(evt.ChatMessage);
                     break;
+                case global::Game.GameEvent.EventOneofCase.CombatStart:
+                    HandleCombatStart(evt.CombatStart);
+                    break;
+                case global::Game.GameEvent.EventOneofCase.MobSpawned:
+                    HandleMobSpawned(evt.MobSpawned);
+                    break;
+                case global::Game.GameEvent.EventOneofCase.MobDespawned:
+                    HandleMobDespawned(evt.MobDespawned);
+                    break;
             }
         }
 
@@ -148,6 +157,33 @@ namespace MMORPG.Game
         private void HandleChatMessage(global::Game.ChatMessage msg)
         {
             OnChatMessageReceived?.Invoke(msg.Username, msg.Message);
+        }
+
+        private void HandleCombatStart(global::Game.CombatStart combatStart)
+        {
+            Combat.CombatManager.Instance.JoinCombat(combatStart.CombatId);
+        }
+
+        private void HandleMobSpawned(global::Game.MobSpawned mob)
+        {
+            if (_players.ContainsKey(mob.MobId)) return;
+
+            var go = CreatePlayerObject();
+            go.name = $"Mob_{mob.Name}";
+            var entity = go.GetComponent<PlayerEntity>();
+            if (entity == null) entity = go.AddComponent<PlayerEntity>();
+            entity.Initialize(mob.MobId, mob.Name, mob.X, mob.Y, _map);
+            entity.SetMobAppearance();
+            _players[mob.MobId] = entity;
+        }
+
+        private void HandleMobDespawned(global::Game.MobDespawned mob)
+        {
+            if (_players.TryGetValue(mob.MobId, out var entity))
+            {
+                Destroy(entity.gameObject);
+                _players.Remove(mob.MobId);
+            }
         }
 
         public async void RequestMove(int targetX, int targetY)

@@ -48,6 +48,8 @@ message GameEvent {
     ChatMessage chat_message = 4;
     MapData map_data = 5;
     CombatStart combat_start = 6;
+    MobSpawned mob_spawned = 7;
+    MobDespawned mob_despawned = 8;
   }
 }
 
@@ -100,4 +102,15 @@ message CombatPlayer {
   int32 team = 3;
   int32 x = 4;
   int32 y = 5;
+}
+
+message MobSpawned {
+  string mob_id = 1;
+  string name = 2;
+  int32 x = 3;
+  int32 y = 4;
+}
+
+message MobDespawned {
+  string mob_id = 1;
 }
